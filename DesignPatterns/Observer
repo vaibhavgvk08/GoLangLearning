@@ -1,0 +1,81 @@
+package main
+
+import (
+	"fmt"
+)
+
+type iObserver interface{
+	Update()	
+}
+
+type iObservable interface{
+	Register()
+	Deregister()
+	NotifyAll()
+}
+
+type Observer struct{
+	email string
+}
+
+type Observable struct{
+	listOfObservers []iObserver	
+	stock int
+}
+
+func (o *Observable) Register(i iObserver){
+	o.listOfObservers = append(o.listOfObservers, i)
+}
+
+func (o *Observable) Deregister(i iObserver) (int, error) {
+	idx :=0
+   	var obj iObserver 
+	for idx, obj = range o.listOfObservers {
+		if obj == i{
+			break
+		} 
+	}
+	if i == obj{ // ---> compare address
+		o.listOfObservers = append(o.listOfObservers[:idx], o.listOfObservers[idx+1:]...) //-----> append(where, what) so since here what is multiple we use ... to specify list of observers (variadic parameters)
+		return idx, nil
+	}
+	return 0, fmt.Errorf("Object not found")
+}
+
+func (o *Observable) NotifyAll(){
+	for _, obj := range o.listOfObservers {
+		obj.Update()
+	}
+}
+
+func (o *Observable)AddStock(newstock int){
+	o.stock = newstock
+	o.NotifyAll()
+}
+
+func (o *Observer) Update() {
+	fmt.Println("Notifying customer : ", o.email)
+}
+
+
+
+func main() {
+	o1 := &Observer{
+		email : "gvk08@xyaa",
+	}
+	
+	o2 := &Observer{
+		email : "xyz@123",
+	}
+	
+	subject := &Observable{}
+	subject.Register(o1)
+	subject.Register(o2)
+	
+	//internal state change
+	subject.AddStock(200)
+	
+	subject.Deregister(o1)
+	subject.AddStock(2000)
+	
+}
