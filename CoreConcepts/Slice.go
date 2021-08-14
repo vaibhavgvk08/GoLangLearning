@@ -18,7 +18,7 @@ func main() {
 	
 	slice4[0] = 1
 	fmt.Println(slice3, slice4)
-	
+	fmt.Println("Size = ", len(slice3), cap(slice3))
 	slice5 := append(slice3, slice4...)
 	fmt.Println(slice5) // slice5 may be newly allocated or not its not guarenteed that append will reuse same array or not
 	
